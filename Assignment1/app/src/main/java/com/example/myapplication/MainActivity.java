@@ -5,11 +5,12 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.myapplication.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Fragment2.Fragment2Listener, Fragment_3.Fragment3Listener {
 
     private ActivityMainBinding binding;
 
@@ -38,23 +39,56 @@ public class MainActivity extends AppCompatActivity {
                         .addToBackStack(null)
                         .commit();
                 currentFragment = 2;
-            } else {
-                 if (!TextUtils.isEmpty(
-                         Fragment2.fragment2Binding.editText.getText().toString())) {
-                     name = Fragment2.fragment2Binding.editText.getText().toString();
-                     Toast.makeText(
-                                     getApplicationContext(),
-                                     name,
-                                     Toast.LENGTH_SHORT)
-                             .show();
-                 } else {
-                     Toast.makeText(
-                             getApplicationContext(),
-                             "Enter name!",
-                             Toast.LENGTH_SHORT)
-                             .show();
-                 }
+
+                binding.buttonContinue.setVisibility(View.GONE);
             }
+//            else {
+//                 if (!TextUtils.isEmpty(
+//                         Fragment2.fragment2Binding.editText.getText().toString())) {
+//                     name = Fragment2.fragment2Binding.editText.getText().toString();
+//                     Toast.makeText(
+//                                     getApplicationContext(),
+//                                     name,
+//                                     Toast.LENGTH_SHORT)
+//                             .show();
+//                 } else {
+//                     Toast.makeText(
+//                             getApplicationContext(),
+//                             "Enter name!",
+//                             Toast.LENGTH_SHORT)
+//                             .show();
+//                 }
+//            }
         });
+    }
+
+    @Override
+    public void onContinueToFragment3(String userName) {
+        if (userName.trim().isEmpty()) {
+            Toast.makeText(this, "Please enter your name!", Toast.LENGTH_SHORT).show();
+            // Don't continue if the name is blank
+            return;
+        }
+
+        Fragment_3 fragment3 = Fragment_3.newInstance(userName);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment3, "FRAGMENT_3")
+                .addToBackStack(null)
+                .commit();
+
+        currentFragment = 3;
+
+    }
+
+    @Override
+    public void onCheckboxStateChanged(boolean isChecked) {
+        Fragment_3 fragment3 = (Fragment_3) getSupportFragmentManager().findFragmentByTag("FRAGMENT_3");
+
+        if (fragment3 != null) {
+            fragment3.updateDynamicButton(isChecked);
+        }
+
     }
 }

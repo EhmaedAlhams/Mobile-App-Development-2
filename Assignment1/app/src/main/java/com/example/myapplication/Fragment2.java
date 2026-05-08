@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,12 @@ import com.example.myapplication.databinding.Fragment2Binding;
 public class Fragment2 extends Fragment {
 
     public static Fragment2Binding fragment2Binding;
+    private Fragment2Listener listener;
+
+    public interface Fragment2Listener {
+        void onContinueToFragment3(String userName);
+    }
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,6 +60,15 @@ public class Fragment2 extends Fragment {
         return fragment;
     }
 
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Fragment2Listener) {
+            listener = (Fragment2Listener) context;
+        } else throw new RuntimeException(context.toString() + " must implement Fragment2Listener");
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,11 +78,38 @@ public class Fragment2 extends Fragment {
         }
     }
 
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        fragment2Binding = Fragment2Binding.inflate(inflater, container, false);
+//        return fragment2Binding.getRoot();
+//    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragment2Binding = Fragment2Binding.inflate(inflater, container, false);
+
+        fragment2Binding.btnContinue.setOnClickListener(v -> {
+            String name = fragment2Binding.editText.getText().toString();
+
+            String gender = "";
+            if (fragment2Binding.rbMale.isChecked()) {
+                gender = "Male";
+            } else if (fragment2Binding.rbFemale.isChecked()) {
+                gender = "Female";
+            }
+
+            if (listener != null) {
+                listener.onContinueToFragment3(name);
+            }
+        });
+
         return fragment2Binding.getRoot();
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        fragment2Binding = null;
     }
 }
